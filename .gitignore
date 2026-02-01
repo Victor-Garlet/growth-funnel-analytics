@@ -1,0 +1,13 @@
+# venv
+venv/
+pyvenv.cfg
+
+# python
+__pycache__/
+*.pyc
+
+# raw data
+data/raw/
+
+# notebooks
+.ipynb_checkpoints/
