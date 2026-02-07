@@ -32,10 +32,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install duckdb pandas matplotlib seaborn numpy
 
+      - name: Check dataset availability
+        id: data_check
+        run: |
+          if [ -f data/processed/events_2019_oct.parquet ] && [ -f data/processed/events_2019_nov.parquet ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "Dataset files found. Running chart generation."
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "Dataset files not found in repository. Skipping generation."
+          fi
+
       - name: Generate chart assets
+        if: steps.data_check.outputs.available == 'true'
         run: python generate_portfolio_assets.py
 
       - name: Commit updated assets
+        if: steps.data_check.outputs.available == 'true'
         run: |
           if git diff --quiet -- assets; then
             echo "No asset changes detected."
