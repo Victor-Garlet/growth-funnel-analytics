@@ -1,7 +1,3 @@
-Perfeito. Abaixo está o **README completo**, já escrito em tom profissional, direto e com linguagem de produto/growth — sem cara de tutorial e sem exageros.
-
----
-
 # 📊 Growth Funnel & Retention Analysis
 
 **E-commerce Product Analytics Case Study**
