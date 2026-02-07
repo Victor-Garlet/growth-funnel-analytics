@@ -504,15 +504,16 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     ltv_max = float(ltv["observed_ltv"].max())
     ax_ltv.set_ylim(0, ltv_max * 1.2)
     for i, y in enumerate(ltv["observed_ltv"]):
-        shift = 10 if i % 2 == 0 else -13
         ax_ltv.annotate(
             f"${float(y):,.0f}",
             (x_ltv[i], float(y)),
             textcoords="offset points",
-            xytext=(0, shift),
+            xytext=(0, 0),
             ha="center",
+            va="center",
             fontsize=8,
             color=BLUE,
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.7, "pad": 0.5},
         )
 
     ax_users = ax_ltv.twinx()
@@ -531,12 +532,12 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     for i, u in enumerate(ltv["cohort_users"]):
         ax_users.text(
             x_ltv[i],
-            float(u) + users_max * 0.03,
+            users_max * 0.02,
             f"{float(u)/1000:.0f}k",
             ha="center",
-            va="bottom",
+            va="center",
             fontsize=8,
-            color=MUTED,
+            color="#111111",
         )
     ax_users.spines["top"].set_visible(False)
     ax_users.spines["right"].set_visible(False)
