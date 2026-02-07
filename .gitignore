@@ -1,13 +1,7 @@
-# venv
-venv/
-pyvenv.cfg
-
-# python
-__pycache__/
-*.pyc
-
-# raw data
 data/raw/
-
-# notebooks
+data/processed/
+data/processed/tmp/
+*.parquet
+*.csv
 .ipynb_checkpoints/
+venv/
