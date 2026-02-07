@@ -10,6 +10,7 @@ import matplotlib
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter
 
 
@@ -26,6 +27,24 @@ SLATE = "#64748B"
 GREEN = "#059669"
 ORANGE = "#EA580C"
 TEAL = "#0F766E"
+
+
+def add_panel_divider(fig: plt.Figure, left_ax: plt.Axes, right_ax: plt.Axes) -> None:
+    left_pos = left_ax.get_position()
+    right_pos = right_ax.get_position()
+    x_div = (left_pos.x1 + right_pos.x0) / 2
+    y0 = min(left_pos.y0, right_pos.y0)
+    y1 = max(left_pos.y1, right_pos.y1)
+    fig.add_artist(
+        Line2D(
+            [x_div, x_div],
+            [y0, y1],
+            transform=fig.transFigure,
+            color="#D1D5DB",
+            linewidth=1.2,
+            zorder=10,
+        )
+    )
 
 
 def find_repo_root(start: Path) -> Path:
@@ -325,6 +344,7 @@ def save_funnel_chart(funnel: pd.DataFrame, _tracking_gap: pd.DataFrame, out_pat
         )
 
     fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
+    add_panel_divider(fig, ax_rates, ax_volumes)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
@@ -419,17 +439,20 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
 
     if not avg_curve.empty:
         last = avg_curve.iloc[-1]
-        ax_curve.annotate(
-            f"avg {pct(float(last['retention_rate']))}",
-            (float(last["week_number"]), float(last["retention_rate"])),
-            textcoords="offset points",
-            xytext=(10, 8),
+        ax_curve.text(
+            0.73,
+            0.74,
+            f"Avg (wk 6): {pct(float(last['retention_rate']))}",
+            transform=ax_curve.transAxes,
             ha="left",
-            fontsize=8,
+            va="center",
+            fontsize=9,
             color=TEAL,
+            bbox={"boxstyle": "round,pad=0.28", "fc": "#ECFDF5", "ec": "#99F6E4", "lw": 1.0},
         )
 
     fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
+    add_panel_divider(fig, ax_heatmap, ax_curve)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
@@ -499,21 +522,23 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     ax_ltv.spines["top"].set_visible(False)
     ax_ltv.spines["right"].set_visible(False)
     ax_ltv.spines["left"].set_visible(False)
+    ax_ltv.spines["bottom"].set_visible(False)
     ax_ltv.set_xticks(x_ltv)
     ax_ltv.set_xticklabels(ltv["cohort_label"], rotation=35, ha="right", fontsize=9)
     ltv_max = float(ltv["observed_ltv"].max())
-    ax_ltv.set_ylim(0, ltv_max * 1.2)
+    ax_ltv.set_ylim(0, ltv_max * 1.3)
     for i, y in enumerate(ltv["observed_ltv"]):
+        x_offset = 10 if i == 1 else 0
+        text_ha = "left" if i == 1 else "center"
         ax_ltv.annotate(
             f"${float(y):,.0f}",
             (x_ltv[i], float(y)),
             textcoords="offset points",
-            xytext=(0, 0),
-            ha="center",
-            va="center",
+            xytext=(x_offset, 10),
+            ha=text_ha,
+            va="bottom",
             fontsize=8,
             color=BLUE,
-            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.7, "pad": 0.5},
         )
 
     ax_users = ax_ltv.twinx()
@@ -541,12 +566,15 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
         )
     ax_users.spines["top"].set_visible(False)
     ax_users.spines["right"].set_visible(False)
+    ax_users.spines["left"].set_visible(False)
+    ax_users.spines["bottom"].set_visible(False)
 
     ltv_handles, ltv_labels = ax_ltv.get_legend_handles_labels()
     users_handles, users_labels = ax_users.get_legend_handles_labels()
     ax_ltv.legend(ltv_handles + users_handles, ltv_labels + users_labels, frameon=False, loc="upper right")
 
     fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
+    add_panel_divider(fig, ax_mix, ax_ltv)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
