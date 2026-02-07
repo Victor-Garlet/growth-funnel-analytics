@@ -5,26 +5,50 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Victor Garlet | Portfolio</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 980px; margin: 40px auto; padding: 0 16px; line-height: 1.55; color:#111; }
-    .meta { color:#666; font-size: 14px; }
-    .card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 18px; margin: 18px 0; background:#fff; }
-    .btn { display:inline-block; margin-right:10px; margin-top:10px; padding:10px 12px; border-radius:10px; border:1px solid #ddd; text-decoration:none; color:#111; }
-    .btn:hover { border-color:#999; }
-    h1 { margin: 0 0 6px 0; font-size: 42px; }
-    h2 { margin: 8px 0 10px 0; font-size: 30px; }
-    h3 { margin: 18px 0 10px 0; font-size: 18px; }
-    ul { margin: 10px 0 0 20px; }
-    li { margin: 6px 0; }
-    .divider { height:1px; background:#eee; margin: 14px 0; }
-    .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
-    .visual { margin-top: 10px; }
-    img { width:100%; border-radius: 10px; border:1px solid #eee; display:block; }
-    .note { font-size: 13px; color:#555; margin-top:8px; }
-    code { background:#f6f6f6; padding:2px 6px; border-radius: 6px; }
-    .viz-card { border:1px solid #e9e9e9; border-radius: 12px; padding: 14px; background: #fcfcfc; }
-    .viz-title { margin: 2px 0 6px 0; font-size: 20px; }
-    .viz-kicker { margin: 0 0 10px 0; color:#555; font-size: 14px; }
-    .viz-insight { margin: 10px 0 0 0; color:#333; font-size: 14px; }
+    :root {
+      --ink:#102a43;
+      --muted:#486581;
+      --line:#d9e2ec;
+      --surface:#ffffff;
+      --canvas:#f5f7fa;
+      --conv:#2563eb;
+      --ret:#ea580c;
+      --mon:#059669;
+      --radius:14px;
+    }
+    body { font-family:"Segoe UI",Tahoma,Arial,sans-serif; max-width:1020px; margin:32px auto; padding:0 16px; line-height:1.55; color:var(--ink); background:var(--canvas); }
+    .meta { color:var(--muted); font-size:14px; }
+    .card { border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin:18px 0; background:var(--surface); box-shadow:0 10px 24px rgba(15,23,42,.04); }
+    .btn { display:inline-block; margin-right:10px; margin-top:10px; padding:10px 12px; border-radius:10px; border:1px solid var(--line); text-decoration:none; color:var(--ink); background:#fff; }
+    .btn:hover { border-color:#9fb3c8; }
+    h1 { margin:0 0 6px 0; font-size:42px; }
+    h2 { margin:8px 0 10px 0; font-size:30px; }
+    h3 { margin:22px 0 12px 0; font-size:20px; }
+    h4 { margin:0; }
+    ul { margin:10px 0 0 20px; }
+    li { margin:6px 0; }
+    .divider { height:1px; background:var(--line); margin:16px 0; }
+    .highlight-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; margin-top:8px; }
+    .highlight { border:1px solid var(--line); border-radius:12px; padding:12px; background:#fbfdff; }
+    .tag { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; margin-bottom:6px; }
+    .conversion .tag { background:#dbeafe; color:#1d4ed8; }
+    .retention .tag { background:#ffedd5; color:#c2410c; }
+    .monetization .tag { background:#dcfce7; color:#047857; }
+    .highlight p { margin:6px 0 0 0; font-size:13px; color:#334e68; }
+    .highlight .action { margin-top:8px; font-weight:600; color:#243b53; }
+    .grid { display:grid; grid-template-columns:1fr; gap:16px; }
+    .visual { margin-top:10px; }
+    img { width:100%; border-radius:12px; border:1px solid var(--line); display:block; background:#fff; }
+    .viz-card { border:1px solid var(--line); border-radius:12px; padding:14px; background:#fff; }
+    .viz-card.conversion { border-left:6px solid var(--conv); }
+    .viz-card.retention { border-left:6px solid var(--ret); }
+    .viz-card.monetization { border-left:6px solid var(--mon); }
+    .viz-title { margin:2px 0 6px 0; font-size:19px; }
+    .viz-kicker { margin:0 0 10px 0; color:#627d98; font-size:14px; }
+    .viz-insight { margin:10px 0 0 0; color:#334e68; font-size:14px; }
+    @media (max-width: 880px) {
+      .highlight-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -56,38 +80,51 @@
     <a class="btn" href="https://github.com/Victor-Garlet/growth-funnel-analytics" target="_blank" rel="noopener">View Repository</a>
     <a class="btn" href="#" onclick="alert('Live dashboard coming next (Streamlit).'); return false;">Live Dashboard (coming)</a>
 
+    <h3>Executive Highlights</h3>
+    <div class="highlight-grid">
+      <div class="highlight conversion">
+        <div class="tag">Conversion</div>
+        <p>View-to-cart increased from 11.2% to 22.4% (+11.2 pp), but cart-to-purchase fell from 60.2% to 48.4% (-11.7 pp).</p>
+        <p class="action">Decision lens: checkout reliability is now the main conversion bottleneck.</p>
+      </div>
+      <div class="highlight retention">
+        <div class="tag">Retention</div>
+        <p>Average repeat declines from 13.3% in week 1 to 10.2% in week 2 (-3.1 pp), with weaker week-1 retention in newer cohorts.</p>
+        <p class="action">Decision lens: improve post-purchase lifecycle in the first 14 days.</p>
+      </div>
+      <div class="highlight monetization">
+        <div class="tag">Monetization</div>
+        <p>November revenue grew +19.7% MoM, with 95.2% concentrated in high-price products; newer cohorts show lower observed early LTV.</p>
+        <p class="action">Decision lens: protect premium conversion and raise value in recent cohorts.</p>
+      </div>
+    </div>
+
     <div class="visual">
       <h3>Key Visuals</h3>
-      <div class="meta">These images are generated automatically in <code>/assets</code> by the script in this repo.</div>
+      <div class="meta">Business evidence by priority area: conversion, retention, and monetization quality.</div>
 
       <div class="grid">
-        <div class="viz-card">
+        <div class="viz-card conversion">
           <h4 class="viz-title">01) Funnel Conversion and Volume Dynamics</h4>
           <p class="viz-kicker">Left: conversion by stage. Right: user volume by stage.</p>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/funnel.png" alt="Funnel conversion by month" />
           <p class="viz-insight"><strong>Insight:</strong> View-to-cart rose from 11.2% to 22.4%, but cart-to-purchase fell from 60.2% to 48.4%. Interest improved, while checkout efficiency weakened.</p>
         </div>
 
-        <div class="viz-card">
+        <div class="viz-card retention">
           <h4 class="viz-title">02) Cohort Retention Quality</h4>
           <p class="viz-kicker">Left: retention heatmap by cohort week. Right: retention decay curve by cohort group.</p>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/retention.png" alt="Weekly retention heatmap by cohort" />
           <p class="viz-insight"><strong>Insight:</strong> Average repeat drops from 13.3% in week 1 to 10.2% in week 2, and November cohorts start below October cohorts at week 1 (-3.6 pp).</p>
         </div>
 
-        <div class="viz-card">
+        <div class="viz-card monetization">
           <h4 class="viz-title">03) Revenue Mix and Cohort Monetization</h4>
           <p class="viz-kicker">Left: monthly revenue mix by price segment. Right: observed LTV vs cohort size.</p>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/revenue.png" alt="Revenue by price segment" />
           <p class="viz-insight"><strong>Insight:</strong> Revenue grew +19.7% MoM and 95.2% of November revenue came from high-price products. Newer cohorts show lower early observed LTV, signaling quality pressure.</p>
         </div>
       </div>
-
-      <p class="note">
-        Generate and update all visuals with one command:
-        <code>.\venv\Scripts\python.exe generate_portfolio_assets.py</code>.
-        The script saves <code>funnel.png</code>, <code>retention.png</code>, and <code>revenue.png</code> in <code>assets/</code>.
-      </p>
     </div>
   </div>
 

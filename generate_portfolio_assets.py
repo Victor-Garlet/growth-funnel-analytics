@@ -288,6 +288,36 @@ def save_funnel_chart(funnel: pd.DataFrame, _tracking_gap: pd.DataFrame, out_pat
     ax_volumes.spines["top"].set_visible(False)
     ax_volumes.spines["right"].set_visible(False)
     ax_volumes.legend(frameon=False, loc="upper right")
+    vol_max = float(funnel[["view_users", "cart_users", "purchase_users"]].max().max())
+    label_offset = vol_max * 0.012
+    for i in range(len(funnel)):
+        ax_volumes.text(
+            x[i] - w,
+            float(funnel.loc[i, "view_users"]) + label_offset,
+            fmt_million(float(funnel.loc[i, "view_users"])),
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=MUTED,
+        )
+        ax_volumes.text(
+            x[i],
+            float(funnel.loc[i, "cart_users"]) + label_offset,
+            fmt_million(float(funnel.loc[i, "cart_users"])),
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=MUTED,
+        )
+        ax_volumes.text(
+            x[i] + w,
+            float(funnel.loc[i, "purchase_users"]) + label_offset,
+            fmt_million(float(funnel.loc[i, "purchase_users"])),
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=MUTED,
+        )
 
     plt.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
