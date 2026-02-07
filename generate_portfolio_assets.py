@@ -257,19 +257,22 @@ def save_funnel_chart(funnel: pd.DataFrame, _tracking_gap: pd.DataFrame, out_pat
     ax_rates.bar(x + w, funnel["view_to_purchase_rate"], w, color=GREEN, label="View -> Purchase")
     ax_rates.set_xticks(x)
     ax_rates.set_xticklabels(funnel["event_month"])
-    ax_rates.set_ylabel("Conversion rate")
-    ax_rates.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:.0%}"))
-    ax_rates.grid(axis="y", color=GRID, linewidth=1, alpha=0.8)
+    ax_rates.set_ylabel("")
+    ax_rates.set_yticks([])
+    ax_rates.grid(False)
     ax_rates.spines["top"].set_visible(False)
     ax_rates.spines["right"].set_visible(False)
+    ax_rates.spines["left"].set_visible(False)
     ax_rates.legend(frameon=False, loc="upper right")
+    max_rate = float(funnel[rate_cols].max().max())
+    ax_rates.set_ylim(0, max_rate * 1.22)
 
     for i in range(len(funnel)):
         for offset, col in zip([-w, 0, w], rate_cols):
             value = float(funnel.loc[i, col])
             ax_rates.text(
                 x[i] + offset,
-                value + 0.01,
+                value + (max_rate * 0.03),
                 pct(value),
                 ha="center",
                 va="bottom",
@@ -282,14 +285,16 @@ def save_funnel_chart(funnel: pd.DataFrame, _tracking_gap: pd.DataFrame, out_pat
     ax_volumes.bar(x + w, funnel["purchase_users"], w, color=GREEN, label="Purchase users")
     ax_volumes.set_xticks(x)
     ax_volumes.set_xticklabels(funnel["event_month"])
-    ax_volumes.set_ylabel("Users")
-    ax_volumes.yaxis.set_major_formatter(FuncFormatter(fmt_million))
-    ax_volumes.grid(axis="y", color=GRID, linewidth=1, alpha=0.8)
+    ax_volumes.set_ylabel("")
+    ax_volumes.set_yticks([])
+    ax_volumes.grid(False)
     ax_volumes.spines["top"].set_visible(False)
     ax_volumes.spines["right"].set_visible(False)
+    ax_volumes.spines["left"].set_visible(False)
     ax_volumes.legend(frameon=False, loc="upper right")
     vol_max = float(funnel[["view_users", "cart_users", "purchase_users"]].max().max())
     label_offset = vol_max * 0.012
+    ax_volumes.set_ylim(0, vol_max * 1.2)
     for i in range(len(funnel)):
         ax_volumes.text(
             x[i] - w,
@@ -357,13 +362,13 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
         cmap="Blues",
         annot=True,
         fmt=".0%",
-        linewidths=0.4,
-        linecolor="#CBD5E1",
+        linewidths=0,
         cbar_kws={"label": "Retention"},
         ax=ax_heatmap,
     )
     ax_heatmap.set_xlabel("Weeks Since First Purchase")
     ax_heatmap.set_ylabel("Cohort Week")
+    ax_heatmap.grid(False)
 
     for group, color in [("Early cohorts (Oct)", BLUE), ("Recent cohorts (Nov)", ORANGE)]:
         subset = curves[curves["cohort_group"] == group]
@@ -387,16 +392,42 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
         label="All cohorts avg",
     )
     ax_curve.set_xlabel("Weeks Since First Purchase")
-    ax_curve.set_ylabel("Retention rate")
-    ax_curve.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:.0%}"))
+    ax_curve.set_ylabel("")
+    ax_curve.set_yticks([])
     ax_curve.set_xticks(range(1, 7))
     ax_curve.set_xlim(0.8, 6.2)
     max_ret = float(max(curves["retention_rate"].max(), avg_curve["retention_rate"].max()))
     ax_curve.set_ylim(0, max_ret * 1.25)
-    ax_curve.grid(axis="y", color=GRID, linewidth=1, alpha=0.8)
+    ax_curve.grid(False)
     ax_curve.spines["top"].set_visible(False)
     ax_curve.spines["right"].set_visible(False)
+    ax_curve.spines["left"].set_visible(False)
     ax_curve.legend(frameon=False, loc="upper right")
+
+    for group, y_shift in [("Early cohorts (Oct)", 8), ("Recent cohorts (Nov)", -12)]:
+        subset = curves[curves["cohort_group"] == group]
+        for _, row in subset.iterrows():
+            ax_curve.annotate(
+                pct(float(row["retention_rate"])),
+                (float(row["week_number"]), float(row["retention_rate"])),
+                textcoords="offset points",
+                xytext=(0, y_shift),
+                ha="center",
+                fontsize=8,
+                color=MUTED,
+            )
+
+    if not avg_curve.empty:
+        last = avg_curve.iloc[-1]
+        ax_curve.annotate(
+            f"avg {pct(float(last['retention_rate']))}",
+            (float(last["week_number"]), float(last["retention_rate"])),
+            textcoords="offset points",
+            xytext=(10, 8),
+            ha="left",
+            fontsize=8,
+            color=TEAL,
+        )
 
     fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
     fig.savefig(out_path, bbox_inches="tight")
@@ -440,12 +471,14 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
 
     ax_mix.set_xticks(x)
     ax_mix.set_xticklabels(rev_pivot.index)
-    ax_mix.set_ylabel("Revenue")
-    ax_mix.yaxis.set_major_formatter(FuncFormatter(fmt_million))
-    ax_mix.grid(axis="y", color=GRID, linewidth=1, alpha=0.8)
+    ax_mix.set_ylabel("")
+    ax_mix.set_yticks([])
+    ax_mix.grid(False)
     ax_mix.spines["top"].set_visible(False)
     ax_mix.spines["right"].set_visible(False)
+    ax_mix.spines["left"].set_visible(False)
     ax_mix.legend(frameon=False, loc="upper left")
+    ax_mix.set_ylim(0, float(totals.max()) * 1.2)
 
     for i, total in enumerate(totals):
         ax_mix.text(i, total * 1.01, f"${total / 1_000_000:.1f}M", ha="center", va="bottom", fontsize=10, color=MUTED)
@@ -460,13 +493,27 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
         label="Observed LTV",
     )
     ax_ltv.set_xlabel("Cohort week")
-    ax_ltv.set_ylabel("Observed LTV (revenue per user)")
-    ax_ltv.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"${v:,.0f}"))
-    ax_ltv.grid(color=GRID, linewidth=1, alpha=0.8)
+    ax_ltv.set_ylabel("")
+    ax_ltv.set_yticks([])
+    ax_ltv.grid(False)
     ax_ltv.spines["top"].set_visible(False)
     ax_ltv.spines["right"].set_visible(False)
+    ax_ltv.spines["left"].set_visible(False)
     ax_ltv.set_xticks(x_ltv)
     ax_ltv.set_xticklabels(ltv["cohort_label"], rotation=35, ha="right", fontsize=9)
+    ltv_max = float(ltv["observed_ltv"].max())
+    ax_ltv.set_ylim(0, ltv_max * 1.2)
+    for i, y in enumerate(ltv["observed_ltv"]):
+        shift = 10 if i % 2 == 0 else -13
+        ax_ltv.annotate(
+            f"${float(y):,.0f}",
+            (x_ltv[i], float(y)),
+            textcoords="offset points",
+            xytext=(0, shift),
+            ha="center",
+            fontsize=8,
+            color=BLUE,
+        )
 
     ax_users = ax_ltv.twinx()
     ax_users.bar(
@@ -477,11 +524,22 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
         color=SLATE,
         label="Cohort users",
     )
-    ax_users.set_ylabel("Cohort users", color=MUTED)
-    ax_users.tick_params(axis="y", colors=MUTED)
-    ax_users.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v/1000:.0f}k"))
-    ax_users.grid(False)
+    ax_users.set_ylabel("")
+    ax_users.set_yticks([])
+    users_max = float(ltv["cohort_users"].max())
+    ax_users.set_ylim(0, users_max * 1.2)
+    for i, u in enumerate(ltv["cohort_users"]):
+        ax_users.text(
+            x_ltv[i],
+            float(u) + users_max * 0.03,
+            f"{float(u)/1000:.0f}k",
+            ha="center",
+            va="bottom",
+            fontsize=8,
+            color=MUTED,
+        )
     ax_users.spines["top"].set_visible(False)
+    ax_users.spines["right"].set_visible(False)
 
     ltv_handles, ltv_labels = ax_ltv.get_legend_handles_labels()
     users_handles, users_labels = ax_users.get_legend_handles_labels()
