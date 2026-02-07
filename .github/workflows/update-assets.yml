@@ -1,0 +1,49 @@
+name: Update Portfolio Assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "notebooks/02_growth_funnel_analysis.ipynb"
+      - "notebooks/03_retention_and_cohorts.ipynb"
+      - "notebooks/04_revenue_ltv_insights.ipynb"
+      - "generate_portfolio_assets.py"
+      - "data/processed/events_2019_oct.parquet"
+      - "data/processed/events_2019_nov.parquet"
+  workflow_dispatch:
+
+jobs:
+  refresh-assets:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install duckdb pandas matplotlib seaborn numpy
+
+      - name: Generate chart assets
+        run: python generate_portfolio_assets.py
+
+      - name: Commit updated assets
+        run: |
+          if git diff --quiet -- assets; then
+            echo "No asset changes detected."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/funnel.png assets/retention.png assets/revenue.png
+          git commit -m "chore: refresh portfolio chart assets"
+          git push

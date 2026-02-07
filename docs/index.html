@@ -25,11 +25,11 @@
 </head>
 <body>
   <h1>Victor Garlet</h1>
-  <div class="meta">Senior Data Analyst | Growth & Product Analytics | SQL • Python • dbt • BI</div>
+  <div class="meta">Senior Data Analyst | Growth & Product Analytics | SQL | Python | dbt | BI</div>
 
   <div class="card">
     <h2>Growth Funnel & Retention Analysis (E-commerce Case Study)</h2>
-    <div class="meta">Oct–Nov 2019 • DuckDB + Parquet • Funnel • Retention Cohorts • Revenue & Observed LTV</div>
+    <div class="meta">Oct-Nov 2019 | DuckDB + Parquet | Funnel | Retention Cohorts | Revenue & Observed LTV</div>
 
     <p>
       <strong>Business Summary:</strong>
@@ -40,7 +40,7 @@
     <div class="divider"></div>
 
     <ul>
-      <li><strong>View→Cart doubled</strong> in November, driven by premium categories</li>
+      <li><strong>View-to-cart doubled</strong> in November, driven by premium categories</li>
       <li><strong>Revenue grew MoM</strong> and is dominated by high-priced items</li>
       <li><strong>Strong early repeat behavior</strong>, with a sharp drop after week 2</li>
       <li><strong>Observed LTV varies by cohort</strong>; recent cohorts show lower early value</li>
@@ -54,12 +54,12 @@
 
     <div class="visual">
       <h3>Key Visuals</h3>
-      <div class="meta">Add these images to <code>/assets</code> in your repo (see note below), then they will render here.</div>
+      <div class="meta">These images are generated automatically in <code>/assets</code> by the script in this repo.</div>
 
       <div class="grid">
         <div>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/funnel.png" alt="Funnel conversion by month" />
-          <p class="meta">Funnel performance by month highlights the improvement in view→cart conversion.</p>
+          <p class="meta">Funnel performance by month highlights the improvement in view-to-cart conversion.</p>
         </div>
 
         <div>
@@ -74,8 +74,9 @@
       </div>
 
       <p class="note">
-        Tip: create an <code>assets/</code> folder in the repo root and save three PNGs with the exact names:
-        <code>funnel.png</code>, <code>retention.png</code>, <code>revenue.png</code>. Commit + push, and the images will appear here automatically.
+        Generate and update all visuals with one command:
+        <code>.\venv\Scripts\python.exe generate_portfolio_assets.py</code>.
+        The script saves <code>funnel.png</code>, <code>retention.png</code>, and <code>revenue.png</code> in <code>assets/</code>.
       </p>
     </div>
   </div>
