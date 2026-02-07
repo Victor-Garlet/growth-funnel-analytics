@@ -241,7 +241,7 @@ def fmt_million(x: float, _pos: int | None = None) -> str:
     return f"{x / 1_000_000:.1f}M"
 
 
-def save_funnel_chart(funnel: pd.DataFrame, tracking_gap: pd.DataFrame, out_path: Path, dpi: int) -> None:
+def save_funnel_chart(funnel: pd.DataFrame, _tracking_gap: pd.DataFrame, out_path: Path, dpi: int) -> None:
     funnel = funnel.copy()
     funnel["event_month"] = funnel["event_month"].astype(str)
     rate_cols = ["view_to_cart_rate", "cart_to_purchase_rate", "view_to_purchase_rate"]
@@ -255,7 +255,6 @@ def save_funnel_chart(funnel: pd.DataFrame, tracking_gap: pd.DataFrame, out_path
     ax_rates.bar(x - w, funnel["view_to_cart_rate"], w, color=BLUE, label="View -> Cart")
     ax_rates.bar(x, funnel["cart_to_purchase_rate"], w, color=SLATE, label="Cart -> Purchase")
     ax_rates.bar(x + w, funnel["view_to_purchase_rate"], w, color=GREEN, label="View -> Purchase")
-    ax_rates.set_title("Funnel Conversion by Month", fontsize=13, fontweight="bold")
     ax_rates.set_xticks(x)
     ax_rates.set_xticklabels(funnel["event_month"])
     ax_rates.set_ylabel("Conversion rate")
@@ -281,7 +280,6 @@ def save_funnel_chart(funnel: pd.DataFrame, tracking_gap: pd.DataFrame, out_path
     ax_volumes.bar(x - w, funnel["view_users"], w, color=BLUE, label="View users")
     ax_volumes.bar(x, funnel["cart_users"], w, color=SLATE, label="Cart users")
     ax_volumes.bar(x + w, funnel["purchase_users"], w, color=GREEN, label="Purchase users")
-    ax_volumes.set_title("Monthly Funnel Volume", fontsize=13, fontweight="bold")
     ax_volumes.set_xticks(x)
     ax_volumes.set_xticklabels(funnel["event_month"])
     ax_volumes.set_ylabel("Users")
@@ -291,53 +289,7 @@ def save_funnel_chart(funnel: pd.DataFrame, tracking_gap: pd.DataFrame, out_path
     ax_volumes.spines["right"].set_visible(False)
     ax_volumes.legend(frameon=False, loc="upper right")
 
-    oct_row, nov_row = funnel.iloc[0], funnel.iloc[1]
-    v2c_pp = (nov_row["view_to_cart_rate"] - oct_row["view_to_cart_rate"]) * 100
-    c2p_pp = (nov_row["cart_to_purchase_rate"] - oct_row["cart_to_purchase_rate"]) * 100
-    v2p_pp = (nov_row["view_to_purchase_rate"] - oct_row["view_to_purchase_rate"]) * 100
-    view_mom = (nov_row["view_users"] - oct_row["view_users"]) / oct_row["view_users"]
-    cart_mom = (nov_row["cart_users"] - oct_row["cart_users"]) / oct_row["cart_users"]
-    nov_gap = tracking_gap.loc[tracking_gap["event_month"] == "2019-11", "share_without_cart"].iloc[0]
-
-    ax_rates.text(
-        0.02,
-        0.03,
-        (
-            f"Comment: top-of-funnel intent improved strongly (+{v2c_pp:.1f} pp),\n"
-            f"but checkout efficiency dropped ({c2p_pp:.1f} pp)."
-        ),
-        transform=ax_rates.transAxes,
-        fontsize=9,
-        color=MUTED,
-        bbox={"facecolor": "#EEF2FF", "edgecolor": "#C7D2FE", "boxstyle": "round,pad=0.35"},
-    )
-    ax_volumes.text(
-        0.02,
-        0.03,
-        (
-            f"Comment: cart users grew {cart_mom:+.0%} vs view users {view_mom:+.0%}.\n"
-            "Priority: audit checkout and payment-drop diagnostics."
-        ),
-        transform=ax_volumes.transAxes,
-        fontsize=9,
-        color=MUTED,
-        bbox={"facecolor": "#ECFDF5", "edgecolor": "#A7F3D0", "boxstyle": "round,pad=0.35"},
-    )
-
-    fig.suptitle("Notebook 02 - Growth Funnel: Momentum vs Friction", fontsize=17, fontweight="bold", y=1.08)
-    fig.text(
-        0.5,
-        1.015,
-        (
-            f"View->Cart {v2c_pp:+.1f} pp | Cart->Purchase {c2p_pp:+.1f} pp | "
-            f"View->Purchase {v2p_pp:+.1f} pp | Purchases without cart event (Nov): {pct(nov_gap)}"
-        ),
-        ha="center",
-        fontsize=11,
-        color=MUTED,
-    )
-
-    plt.tight_layout(rect=[0, 0, 1, 0.88])
+    plt.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
@@ -376,7 +328,6 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
         cbar_kws={"label": "Retention"},
         ax=ax_heatmap,
     )
-    ax_heatmap.set_title("Weekly Purchase Retention Heatmap", fontsize=13, fontweight="bold")
     ax_heatmap.set_xlabel("Weeks Since First Purchase")
     ax_heatmap.set_ylabel("Cohort Week")
 
@@ -401,7 +352,6 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
         color=TEAL,
         label="All cohorts avg",
     )
-    ax_curve.set_title("Retention Decay: Early vs Recent Cohorts", fontsize=13, fontweight="bold")
     ax_curve.set_xlabel("Weeks Since First Purchase")
     ax_curve.set_ylabel("Retention rate")
     ax_curve.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:.0%}"))
@@ -412,55 +362,7 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
     ax_curve.spines["right"].set_visible(False)
     ax_curve.legend(frameon=False, loc="upper right")
 
-    wk1 = avg_curve.loc[avg_curve["week_number"] == 1, "retention_rate"].iloc[0]
-    wk2 = avg_curve.loc[avg_curve["week_number"] == 2, "retention_rate"].iloc[0]
-    decay = (wk2 - wk1) * 100
-
-    nov_wk1 = curves.loc[
-        (curves["cohort_group"] == "Recent cohorts (Nov)") & (curves["week_number"] == 1),
-        "retention_rate",
-    ]
-    oct_wk1 = curves.loc[
-        (curves["cohort_group"] == "Early cohorts (Oct)") & (curves["week_number"] == 1),
-        "retention_rate",
-    ]
-    gap_text = ""
-    if not nov_wk1.empty and not oct_wk1.empty:
-        gap = (nov_wk1.iloc[0] - oct_wk1.iloc[0]) * 100
-        gap_text = f" | Nov cohorts vs Oct at week 1: {gap:+.1f} pp"
-
-    ax_curve.text(
-        0.03,
-        0.03,
-        (
-            f"Comment: week 1 repeat = {wk1:.1%}, week 2 = {wk2:.1%} ({decay:+.1f} pp).\n"
-            "Main risk: early repeat weakens quickly after first purchase."
-        ),
-        transform=ax_curve.transAxes,
-        fontsize=9,
-        color=MUTED,
-        bbox={"facecolor": "#F0F9FF", "edgecolor": "#BAE6FD", "boxstyle": "round,pad=0.35"},
-    )
-    ax_heatmap.text(
-        0.02,
-        -0.16,
-        "Comment: recent cohorts start below older cohorts in week 1, suggesting lower acquisition quality.",
-        transform=ax_heatmap.transAxes,
-        fontsize=9,
-        color=MUTED,
-    )
-
-    fig.suptitle("Notebook 03 - Retention Cohorts: Strong Start, Fast Decay", fontsize=17, fontweight="bold", y=1.08)
-    fig.text(
-        0.5,
-        1.015,
-        f"Week 1 to week 2 retention change: {decay:+.1f} pp{gap_text}",
-        ha="center",
-        fontsize=11,
-        color=MUTED,
-    )
-
-    plt.tight_layout(rect=[0, 0, 1, 0.88])
+    plt.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
@@ -479,8 +381,6 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
         .fillna(0.0)
     )
     totals = rev_pivot.sum(axis=1)
-    high_share_nov = rev_pivot.loc["2019-11", "high"] / totals.loc["2019-11"]
-    rev_mom = (totals.loc["2019-11"] - totals.loc["2019-10"]) / totals.loc["2019-10"]
 
     ltv["cohort_label"] = ltv["cohort_week"].dt.strftime("%Y-%m-%d")
     ltv["cohort_group"] = np.where(ltv["cohort_week"] < pd.Timestamp("2019-11-01"), "Oct start", "Nov start")
@@ -504,7 +404,6 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
 
     ax_mix.set_xticks(x)
     ax_mix.set_xticklabels(rev_pivot.index)
-    ax_mix.set_title("Revenue Mix by Price Segment", fontsize=13, fontweight="bold")
     ax_mix.set_ylabel("Revenue")
     ax_mix.yaxis.set_major_formatter(FuncFormatter(fmt_million))
     ax_mix.grid(axis="y", color=GRID, linewidth=1, alpha=0.8)
@@ -531,7 +430,6 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
             linewidth=0.8,
         )
 
-    ax_ltv.set_title("Observed LTV vs Cohort Size", fontsize=13, fontweight="bold")
     ax_ltv.set_xlabel("Cohort users")
     ax_ltv.set_ylabel("Observed LTV (revenue per user)")
     ax_ltv.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"${v:,.0f}"))
@@ -540,65 +438,7 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     ax_ltv.spines["right"].set_visible(False)
     ax_ltv.legend(frameon=False, loc="upper right")
 
-    first_cohort = ltv.iloc[0]
-    last_cohort = ltv.iloc[-1]
-    ax_ltv.annotate(
-        "Highest observed LTV",
-        xy=(first_cohort["cohort_users"], first_cohort["observed_ltv"]),
-        xytext=(8, 8),
-        textcoords="offset points",
-        fontsize=9,
-        color=MUTED,
-    )
-    ax_ltv.annotate(
-        "Recent cohort lower early value",
-        xy=(last_cohort["cohort_users"], last_cohort["observed_ltv"]),
-        xytext=(8, -14),
-        textcoords="offset points",
-        fontsize=9,
-        color=MUTED,
-    )
-
-    ltv_drop = (last_cohort["observed_ltv"] - first_cohort["observed_ltv"]) / first_cohort["observed_ltv"]
-    ax_mix.text(
-        0.02,
-        0.03,
-        (
-            f"Comment: high-price products represent {high_share_nov:.1%} of Nov revenue.\n"
-            "Growth is monetization-led, not broad-based across low/mid price ranges."
-        ),
-        transform=ax_mix.transAxes,
-        fontsize=9,
-        color=MUTED,
-        bbox={"facecolor": "#ECFDF5", "edgecolor": "#A7F3D0", "boxstyle": "round,pad=0.35"},
-    )
-    ax_ltv.text(
-        0.03,
-        0.03,
-        (
-            f"Comment: observed LTV fell from ${first_cohort['observed_ltv']:,.0f}\n"
-            f"to ${last_cohort['observed_ltv']:,.0f} in newer cohorts."
-        ),
-        transform=ax_ltv.transAxes,
-        fontsize=9,
-        color=MUTED,
-        bbox={"facecolor": "#FFF7ED", "edgecolor": "#FED7AA", "boxstyle": "round,pad=0.35"},
-    )
-
-    fig.suptitle("Notebook 04 - Revenue and LTV: Growth Concentrated in Premium SKUs", fontsize=17, fontweight="bold", y=1.08)
-    fig.text(
-        0.5,
-        1.015,
-        (
-            f"MoM revenue growth: {rev_mom:+.1%} | Nov high-price share: {high_share_nov:.1%} | "
-            f"Observed LTV change (first vs latest cohort): {ltv_drop:+.1%}"
-        ),
-        ha="center",
-        fontsize=11,
-        color=MUTED,
-    )
-
-    plt.tight_layout(rect=[0, 0, 1, 0.88])
+    plt.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
