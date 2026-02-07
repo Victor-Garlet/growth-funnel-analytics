@@ -339,11 +339,15 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
         "Recent cohorts (Nov)",
     )
     curves = (
-        retention[retention["week_number"] <= 6]
+        retention[(retention["week_number"] >= 1) & (retention["week_number"] <= 6)]
         .groupby(["cohort_group", "week_number"], as_index=False)["retention_rate"]
         .mean()
     )
-    avg_curve = retention.groupby("week_number", as_index=False)["retention_rate"].mean()
+    avg_curve = (
+        retention[(retention["week_number"] >= 1) & (retention["week_number"] <= 6)]
+        .groupby("week_number", as_index=False)["retention_rate"]
+        .mean()
+    )
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 6), dpi=dpi, gridspec_kw={"width_ratios": [1.4, 1]})
     ax_heatmap, ax_curve = axes
@@ -385,8 +389,10 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
     ax_curve.set_xlabel("Weeks Since First Purchase")
     ax_curve.set_ylabel("Retention rate")
     ax_curve.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:.0%}"))
-    ax_curve.set_xticks(range(0, 7))
-    ax_curve.set_ylim(0, 1.05)
+    ax_curve.set_xticks(range(1, 7))
+    ax_curve.set_xlim(0.8, 6.2)
+    max_ret = float(max(curves["retention_rate"].max(), avg_curve["retention_rate"].max()))
+    ax_curve.set_ylim(0, max_ret * 1.25)
     ax_curve.grid(axis="y", color=GRID, linewidth=1, alpha=0.8)
     ax_curve.spines["top"].set_visible(False)
     ax_curve.spines["right"].set_visible(False)
@@ -412,8 +418,8 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     )
     totals = rev_pivot.sum(axis=1)
 
+    ltv = ltv.sort_values("cohort_week").reset_index(drop=True)
     ltv["cohort_label"] = ltv["cohort_week"].dt.strftime("%Y-%m-%d")
-    ltv["cohort_group"] = np.where(ltv["cohort_week"] < pd.Timestamp("2019-11-01"), "Oct start", "Nov start")
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 6), dpi=dpi, gridspec_kw={"width_ratios": [1.1, 1]})
     ax_mix, ax_ltv = axes
@@ -444,29 +450,42 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     for i, total in enumerate(totals):
         ax_mix.text(i, total * 1.01, f"${total / 1_000_000:.1f}M", ha="center", va="bottom", fontsize=10, color=MUTED)
 
-    bubble_colors = {"Oct start": BLUE, "Nov start": ORANGE}
-    for group, color in bubble_colors.items():
-        subset = ltv[ltv["cohort_group"] == group]
-        if subset.empty:
-            continue
-        ax_ltv.scatter(
-            subset["cohort_users"],
-            subset["observed_ltv"],
-            s=np.clip(subset["total_revenue"] / 300_000, 80, 700),
-            alpha=0.8,
-            color=color,
-            label=group,
-            edgecolor="white",
-            linewidth=0.8,
-        )
-
-    ax_ltv.set_xlabel("Cohort users")
+    x_ltv = np.arange(len(ltv))
+    ax_ltv.plot(
+        x_ltv,
+        ltv["observed_ltv"],
+        color=BLUE,
+        marker="o",
+        linewidth=2.2,
+        label="Observed LTV",
+    )
+    ax_ltv.set_xlabel("Cohort week")
     ax_ltv.set_ylabel("Observed LTV (revenue per user)")
     ax_ltv.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"${v:,.0f}"))
     ax_ltv.grid(color=GRID, linewidth=1, alpha=0.8)
     ax_ltv.spines["top"].set_visible(False)
     ax_ltv.spines["right"].set_visible(False)
-    ax_ltv.legend(frameon=False, loc="upper right")
+    ax_ltv.set_xticks(x_ltv)
+    ax_ltv.set_xticklabels(ltv["cohort_label"], rotation=35, ha="right", fontsize=9)
+
+    ax_users = ax_ltv.twinx()
+    ax_users.bar(
+        x_ltv,
+        ltv["cohort_users"],
+        width=0.58,
+        alpha=0.2,
+        color=SLATE,
+        label="Cohort users",
+    )
+    ax_users.set_ylabel("Cohort users", color=MUTED)
+    ax_users.tick_params(axis="y", colors=MUTED)
+    ax_users.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v/1000:.0f}k"))
+    ax_users.grid(False)
+    ax_users.spines["top"].set_visible(False)
+
+    ltv_handles, ltv_labels = ax_ltv.get_legend_handles_labels()
+    users_handles, users_labels = ax_users.get_legend_handles_labels()
+    ax_ltv.legend(ltv_handles + users_handles, ltv_labels + users_labels, frameon=False, loc="upper right")
 
     fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
     fig.savefig(out_path, bbox_inches="tight")
