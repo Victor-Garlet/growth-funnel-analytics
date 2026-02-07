@@ -46,6 +46,10 @@
     .viz-title { margin:2px 0 6px 0; font-size:19px; }
     .viz-kicker { margin:0 0 10px 0; color:#627d98; font-size:14px; }
     .viz-insight { margin:10px 0 0 0; color:#334e68; font-size:14px; }
+    .story { margin-top:10px; padding-top:10px; border-top:1px dashed #d9e2ec; }
+    .story p { margin:6px 0; font-size:14px; color:#334e68; }
+    .story b { color:#102a43; }
+    .hypothesis-note { margin-top:12px; font-size:12px; color:#627d98; }
     @media (max-width: 880px) {
       .highlight-grid { grid-template-columns:1fr; }
     }
@@ -108,23 +112,37 @@
           <h4 class="viz-title">01) Funnel Conversion and Volume Dynamics</h4>
           <p class="viz-kicker">Left: conversion by stage. Right: user volume by stage.</p>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/funnel.png" alt="Funnel conversion by month" />
-          <p class="viz-insight"><strong>Insight:</strong> View-to-cart rose from 11.2% to 22.4%, but cart-to-purchase fell from 60.2% to 48.4%. Interest improved, while checkout efficiency weakened.</p>
+          <div class="story">
+            <p><b>What happened:</b> View-to-cart rose from 11.2% to 22.4%, while cart-to-purchase declined from 60.2% to 48.4%.</p>
+            <p><b>Why it likely happened:</b> Cart users grew +145% versus +22% growth in viewers, suggesting a much wider top-of-funnel intent capture than checkout capacity. In parallel, purchase-without-cart share dropped from 41.6% to 9.4%, indicating stronger cart-step capture in November and a larger cart denominator.</p>
+            <p><b>Business implication:</b> Priority should shift to checkout reliability and payment-step diagnostics to recover purchase efficiency.</p>
+          </div>
         </div>
 
         <div class="viz-card retention">
           <h4 class="viz-title">02) Cohort Retention Quality</h4>
           <p class="viz-kicker">Left: retention heatmap by cohort week. Right: retention decay curve by cohort group.</p>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/retention.png" alt="Weekly retention heatmap by cohort" />
-          <p class="viz-insight"><strong>Insight:</strong> Average repeat drops from 13.3% in week 1 to 10.2% in week 2, and November cohorts start below October cohorts at week 1 (-3.6 pp).</p>
+          <div class="story">
+            <p><b>What happened:</b> Repeat purchase drops from 13.3% in week 1 to 10.2% in week 2, and November cohorts start below October cohorts at week 1 (-3.6 pp).</p>
+            <p><b>Why it likely happened:</b> Cohort quality appears weaker in November (week 1: 11.1% vs 14.6% in October cohorts; week 2: 6.4% vs 11.7%), consistent with broader acquisition and lower early intent-to-repeat behavior.</p>
+            <p><b>Business implication:</b> The first 14 days post-purchase are the highest leverage window for CRM, replenishment triggers, and second-order incentives.</p>
+          </div>
         </div>
 
         <div class="viz-card monetization">
           <h4 class="viz-title">03) Revenue Mix and Cohort Monetization</h4>
-          <p class="viz-kicker">Left: monthly revenue mix by price segment. Right: observed LTV vs cohort size.</p>
+          <p class="viz-kicker">Left: revenue mix by price segment with zoom for low/mid. Right: observed LTV vs cohort size.</p>
           <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/revenue.png" alt="Revenue by price segment" />
-          <p class="viz-insight"><strong>Insight:</strong> Revenue grew +19.7% MoM and 95.2% of November revenue came from high-price products. Newer cohorts show lower early observed LTV, signaling quality pressure.</p>
+          <div class="story">
+            <p><b>What happened:</b> Revenue grew +19.7% MoM, with 95.2% of November revenue concentrated in high-price products; low-price contribution remains very small.</p>
+            <p><b>Why it likely happened:</b> High-price segment contributed most of growth (+$42.3M of +$45.2M total growth), led by categories such as smartphones. This indicates revenue expansion was premium-led rather than broad-based.</p>
+            <p><b>Business implication:</b> Protect premium conversion while building repeat value in newer cohorts to reduce dependence on a narrow monetization base.</p>
+          </div>
         </div>
       </div>
+
+      <p class="hypothesis-note">Note: “Why it likely happened” statements are evidence-based hypotheses from behavioral patterns in the dataset, not causal proofs.</p>
     </div>
   </div>
 

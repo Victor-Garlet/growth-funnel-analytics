@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.ticker import FuncFormatter
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
 matplotlib.use("Agg")
@@ -319,7 +320,7 @@ def save_funnel_chart(funnel: pd.DataFrame, _tracking_gap: pd.DataFrame, out_pat
             color=MUTED,
         )
 
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
@@ -392,7 +393,7 @@ def save_retention_chart(retention: pd.DataFrame, out_path: Path, dpi: int) -> N
     ax_curve.spines["right"].set_visible(False)
     ax_curve.legend(frameon=False, loc="upper right")
 
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
@@ -444,6 +445,26 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     for i, total in enumerate(totals):
         ax_mix.text(i, total * 1.01, f"${total / 1_000_000:.1f}M", ha="center", va="bottom", fontsize=10, color=MUTED)
 
+    # Zoom panel to make low-price revenue visible without distorting the main scale.
+    ax_zoom = inset_axes(ax_mix, width="46%", height="44%", loc="lower right", borderpad=1.8)
+    zx = np.arange(len(month_order))
+    zw = 0.34
+    low_vals = (rev_pivot["low"].to_numpy() / 1_000_000).astype(float)
+    mid_vals = (rev_pivot["mid"].to_numpy() / 1_000_000).astype(float)
+    ax_zoom.bar(zx - zw / 2, low_vals, width=zw, color=seg_colors["low"], label="Low")
+    ax_zoom.bar(zx + zw / 2, mid_vals, width=zw, color=seg_colors["mid"], label="Mid")
+    ax_zoom.set_title("Zoom: low + mid revenue (USD M)", fontsize=8, pad=4)
+    ax_zoom.set_xticks(zx)
+    ax_zoom.set_xticklabels(month_order, fontsize=7)
+    ax_zoom.tick_params(axis="y", labelsize=7)
+    ax_zoom.grid(axis="y", color=GRID, linewidth=0.8, alpha=0.8)
+    ax_zoom.spines["top"].set_visible(False)
+    ax_zoom.spines["right"].set_visible(False)
+    ax_zoom.set_ylim(0, max(mid_vals) * 1.25)
+    for i in range(len(month_order)):
+        ax_zoom.text(zx[i] - zw / 2, low_vals[i] + 0.05, f"{low_vals[i]:.2f}", ha="center", va="bottom", fontsize=7, color=MUTED)
+        ax_zoom.text(zx[i] + zw / 2, mid_vals[i] + 0.08, f"{mid_vals[i]:.1f}", ha="center", va="bottom", fontsize=7, color=MUTED)
+
     bubble_colors = {"Oct start": BLUE, "Nov start": ORANGE}
     for group, color in bubble_colors.items():
         subset = ltv[ltv["cohort_group"] == group]
@@ -468,7 +489,7 @@ def save_revenue_chart(revenue: pd.DataFrame, ltv: pd.DataFrame, out_path: Path,
     ax_ltv.spines["right"].set_visible(False)
     ax_ltv.legend(frameon=False, loc="upper right")
 
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.95, wspace=0.14)
     fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
 
