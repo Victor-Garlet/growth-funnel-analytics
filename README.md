@@ -192,4 +192,4 @@ Possible extensions for future iterations:
 
 ---
 
-This project demonstrates end-to-end product analytics thinking — from user behavior and funnel performance to revenue and retention — with a focus on turning data into actionable business insights.
+This project demonstrates end-to-end product analytics thinking (from user behavior and funnel performance to revenue and retention) with a focus on turning data into actionable business insights.
