@@ -5,15 +5,22 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Victor Garlet | Portfolio</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 920px; margin: 40px auto; padding: 0 16px; line-height: 1.5; }
-    .card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 18px; margin: 18px 0; }
+    body { font-family: Arial, sans-serif; max-width: 980px; margin: 40px auto; padding: 0 16px; line-height: 1.55; color:#111; }
     .meta { color:#666; font-size: 14px; }
+    .card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 18px; margin: 18px 0; background:#fff; }
     .btn { display:inline-block; margin-right:10px; margin-top:10px; padding:10px 12px; border-radius:10px; border:1px solid #ddd; text-decoration:none; color:#111; }
     .btn:hover { border-color:#999; }
-    img { width:100%; border-radius: 10px; border:1px solid #eee; }
-    h1 { margin-bottom: 0; }
-    h2 { margin-top: 10px; }
-    ul { margin-top: 6px; }
+    h1 { margin: 0 0 6px 0; font-size: 42px; }
+    h2 { margin: 8px 0 10px 0; font-size: 30px; }
+    h3 { margin: 18px 0 10px 0; font-size: 18px; }
+    ul { margin: 10px 0 0 20px; }
+    li { margin: 6px 0; }
+    .divider { height:1px; background:#eee; margin: 14px 0; }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 14px; }
+    .visual { margin-top: 10px; }
+    img { width:100%; border-radius: 10px; border:1px solid #eee; display:block; }
+    .note { font-size: 13px; color:#555; margin-top:8px; }
+    code { background:#f6f6f6; padding:2px 6px; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -25,28 +32,59 @@
     <div class="meta">Oct–Nov 2019 • DuckDB + Parquet • Funnel • Retention Cohorts • Revenue & Observed LTV</div>
 
     <p>
-      End-to-end product analytics case study focused on funnel performance, revenue drivers and cohort retention.
-      Built to be read quickly by recruiters while keeping full technical depth in the repo.
+      <strong>Business Summary:</strong>
+      This analysis investigates why revenue grew month-over-month and which levers drove performance.
+      The focus is funnel efficiency, pricing behavior, and retention dynamics to simulate how a Growth Analytics team supports product and marketing decisions.
     </p>
 
+    <div class="divider"></div>
+
     <ul>
-      <li>View→Cart doubled in November, driven by premium categories</li>
-      <li>Revenue grew MoM and is dominated by high-priced items</li>
-      <li>Strong early repeat behavior, sharp drop after week 2</li>
-      <li>Observed LTV varies by cohort; recent cohorts show lower early value</li>
+      <li><strong>View→Cart doubled</strong> in November, driven by premium categories</li>
+      <li><strong>Revenue grew MoM</strong> and is dominated by high-priced items</li>
+      <li><strong>Strong early repeat behavior</strong>, with a sharp drop after week 2</li>
+      <li><strong>Observed LTV varies by cohort</strong>; recent cohorts show lower early value</li>
     </ul>
 
-    <a class="btn" href="../README.md">Read the Case Study (README)</a>
-    <a class="btn" href="../">View Repository</a>
-    <!-- depois a gente troca esse link quando tiver Streamlit -->
+    <div class="divider"></div>
+
+    <a class="btn" href="https://github.com/Victor-Garlet/growth-funnel-analytics#readme" target="_blank" rel="noopener">Read the Case Study (README)</a>
+    <a class="btn" href="https://github.com/Victor-Garlet/growth-funnel-analytics" target="_blank" rel="noopener">View Repository</a>
     <a class="btn" href="#" onclick="alert('Live dashboard coming next (Streamlit).'); return false;">Live Dashboard (coming)</a>
+
+    <div class="visual">
+      <h3>Key Visuals</h3>
+      <div class="meta">Add these images to <code>/assets</code> in your repo (see note below), then they will render here.</div>
+
+      <div class="grid">
+        <div>
+          <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/funnel.png" alt="Funnel conversion by month" />
+          <p class="meta">Funnel performance by month highlights the improvement in view→cart conversion.</p>
+        </div>
+
+        <div>
+          <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/retention.png" alt="Weekly retention heatmap by cohort" />
+          <p class="meta">Cohort retention shows strong early repeat behavior with steep decay after week 2.</p>
+        </div>
+
+        <div>
+          <img src="https://raw.githubusercontent.com/Victor-Garlet/growth-funnel-analytics/main/assets/revenue.png" alt="Revenue by price segment" />
+          <p class="meta">Revenue is concentrated in high-priced items, while lower segments bring engagement but limited monetization.</p>
+        </div>
+      </div>
+
+      <p class="note">
+        Tip: create an <code>assets/</code> folder in the repo root and save three PNGs with the exact names:
+        <code>funnel.png</code>, <code>retention.png</code>, <code>revenue.png</code>. Commit + push, and the images will appear here automatically.
+      </p>
+    </div>
   </div>
 
   <div class="card">
     <h2>Contact</h2>
     <ul>
-      <li>LinkedIn: <span class="meta">(add your link)</span></li>
-      <li>Email: <span class="meta">(add your email)</span></li>
+      <li>LinkedIn: <a href="https://www.linkedin.com/in/victor-garlet/" target="_blank" rel="noopener">https://www.linkedin.com/in/victor-garlet/</a></li>
+      <li>Email: <a href="mailto:victormoraes684@gmail.com">victormoraes684@gmail.com</a></li>
     </ul>
   </div>
 </body>
